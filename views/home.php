@@ -92,8 +92,9 @@
 
 <section class="gallery-strip" aria-label="Eastern Sweets product gallery">
     <div class="gallery-track">
+        <?php $galleryItems = !empty($galleryProducts) ? $galleryProducts : array_slice($products, 0, 8); ?>
         <?php for ($loop = 0; $loop < 2; $loop++): ?>
-            <?php foreach (array_slice($products, 0, 8) as $product): ?>
+            <?php foreach ($galleryItems as $product): ?>
                 <a class="gallery-item" href="<?= url('product', ['id' => $product['id']]) ?>">
                     <img src="<?= asset($product['image_path']) ?>" alt="<?= h($product['name']) ?>">
                     <span><?= h($product['name']) ?></span>

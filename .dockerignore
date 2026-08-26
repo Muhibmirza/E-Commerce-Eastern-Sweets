@@ -1,0 +1,10 @@
+.git
+.agents
+.codex
+.env
+vendor
+qa-*.png
+.qa-*.png
+server.err.log
+server.out.log
+README.md

@@ -20,6 +20,22 @@ final class Product
         return $stmt->fetchAll();
     }
 
+    public static function gallery(int $limit = 10): array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT p.id, p.name,
+                (SELECT image_path FROM product_images WHERE product_id = p.id ORDER BY is_primary DESC, sort_order, id LIMIT 1) AS image_path
+             FROM products p
+             WHERE p.is_active = 1
+               AND EXISTS (SELECT 1 FROM product_images pi WHERE pi.product_id = p.id AND pi.is_primary = 1)
+             ORDER BY p.is_featured DESC, p.sales_count DESC, p.id
+             LIMIT ?'
+        );
+        $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public static function search(array $filters = [], int $limit = 24, int $offset = 0): array
     {
         $where = ['p.is_active = 1'];

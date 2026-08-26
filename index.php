@@ -1,15 +1,20 @@
 <?php
 declare(strict_types=1);
 
+$forwardedProto = strtolower(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')[0]));
+$isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $forwardedProto === 'https';
+
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
     'domain' => '',
-    'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+    'secure' => $isHttps,
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
 session_start();
+
+require __DIR__ . '/includes/env.php';
 
 header_remove('X-Powered-By');
 header('X-Frame-Options: SAMEORIGIN');
@@ -19,6 +24,9 @@ header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
 
 require __DIR__ . '/includes/db.php';
 require __DIR__ . '/includes/helpers.php';
+if (is_file(__DIR__ . '/vendor/autoload.php')) {
+    require __DIR__ . '/vendor/autoload.php';
+}
 
 spl_autoload_register(function (string $class): void {
     foreach (['models', 'controllers'] as $dir) {
@@ -78,6 +86,12 @@ try {
             break;
         case 'checkout':
             $method === 'POST' ? $store->placeOrder() : $store->checkout();
+            break;
+        case 'payment/safepay/return':
+            $store->safepayReturn();
+            break;
+        case 'payment/safepay/cancel':
+            $store->safepayCancel();
             break;
         case 'login':
             $method === 'POST' ? $store->login() : $store->loginForm();

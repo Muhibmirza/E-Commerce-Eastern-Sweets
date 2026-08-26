@@ -1,0 +1,8 @@
+/.env
+/vendor/
+/server.err.log
+/server.out.log
+/qa-*.png
+/.qa-*.png
+/uploads/content/*
+/uploads/products/*

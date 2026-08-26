@@ -9,6 +9,7 @@ final class StoreController
             'title' => 'Eastern Sweets - Fresh Mithai, Bakers & Nimco',
             'categories' => Category::all(),
             'products' => Product::featured(8),
+            'galleryProducts' => Product::gallery(10),
             'banners' => $this->banners(),
             'settings' => SiteContent::settings(),
             'uspBlocks' => SiteContent::uspBlocks(),
@@ -190,6 +191,17 @@ final class StoreController
             }
         }
 
+        $paymentMethod = (string)$_POST['payment_method'];
+        $paymentMethods = require __DIR__ . '/../includes/payment-config.php';
+        if (empty($paymentMethods[$paymentMethod]['enabled'])) {
+            flash('error', 'The selected payment method is unavailable.');
+            redirect('checkout');
+        }
+        if (!filter_var((string)$_POST['email'], FILTER_VALIDATE_EMAIL)) {
+            flash('error', 'Please enter a valid email address.');
+            redirect('checkout');
+        }
+
         try {
             $orderId = Order::create([
                 'name' => trim((string)$_POST['name']),
@@ -199,7 +211,12 @@ final class StoreController
                 'city' => trim((string)$_POST['city']),
                 'area' => trim((string)$_POST['area']),
                 'notes' => trim((string)($_POST['notes'] ?? '')),
-            ], cart_items(), (string)$_POST['payment_method'], current_user(), $_SESSION['coupon'] ?? null);
+            ], cart_items(), $paymentMethod, current_user(), $_SESSION['coupon'] ?? null);
+
+            if ($paymentMethod === 'safepay') {
+                $this->startSafepayCheckout($orderId);
+                return;
+            }
 
             $_SESSION['cart'] = [];
             unset($_SESSION['coupon']);
@@ -209,6 +226,76 @@ final class StoreController
             redirect('checkout');
         }
     }
+
+    public function safepayReturn(): void
+    {
+        $tracker = trim((string)($_POST['tracker'] ?? $_GET['tracker'] ?? ''));
+        $signature = trim((string)($_POST['sig'] ?? $_GET['sig'] ?? ''));
+
+        try {
+            if ($tracker === '' || $signature === '' || !(new SafepayGateway())->verifyReturn($tracker, $signature)) {
+                throw new RuntimeException('Safepay payment verification failed. Your order has not been confirmed.');
+            }
+
+            $payment = Payment::findByReference($tracker);
+            $pendingOrderId = (int)($_SESSION['safepay_order_id'] ?? 0);
+            if (!$payment || ($pendingOrderId > 0 && (int)$payment['order_id'] !== $pendingOrderId)) {
+                throw new RuntimeException('This Safepay payment does not match your order.');
+            }
+
+            Payment::markPaid((int)$payment['order_id'], $tracker);
+            $order = Order::find((int)$payment['order_id']);
+            if (!$order) {
+                throw new RuntimeException('The paid order could not be found.');
+            }
+
+            $_SESSION['cart'] = [];
+            unset($_SESSION['coupon'], $_SESSION['safepay_order_id']);
+            render('order-confirmation', ['title' => 'Payment Successful', 'order' => $order]);
+        } catch (Throwable $e) {
+            flash('error', $e->getMessage());
+            redirect('checkout');
+        }
+    }
+
+    public function safepayCancel(): void
+    {
+        $orderId = (int)($_SESSION['safepay_order_id'] ?? 0);
+        if ($orderId > 0) {
+            Order::cancelUnpaid($orderId);
+        }
+        unset($_SESSION['safepay_order_id']);
+        flash('info', 'Safepay payment was cancelled. Your cart is still available.');
+        redirect('checkout');
+    }
+
+    private function startSafepayCheckout(int $orderId): void
+    {
+        try {
+            $order = Order::find($orderId);
+            if (!$order) {
+                throw new RuntimeException('Order could not be prepared for payment.');
+            }
+
+            $safepay = new SafepayGateway();
+            $tracker = $safepay->createTracker((float)$order['total_amount'], (string)$order['order_number']);
+
+            Payment::setReference($orderId, $tracker);
+            $_SESSION['safepay_order_id'] = $orderId;
+
+            $redirectUrl = $safepay->checkoutUrl($tracker);
+            if (!preg_match('#^https://sandbox\.api\.getsafepay\.com/checkout/pay(?:\?|$)#', $redirectUrl)) {
+                throw new RuntimeException('Safepay checkout link could not be created.');
+            }
+
+            header('Location: ' . $redirectUrl, true, 303);
+            exit;
+        } catch (Throwable $e) {
+            Order::cancelUnpaid($orderId);
+            throw $e;
+        }
+    }
+
 
     public function loginForm(): void
     {

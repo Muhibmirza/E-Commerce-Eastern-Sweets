@@ -46,6 +46,35 @@ final class Payment
         return $row ?: null;
     }
 
+    public static function findByReference(string $reference): ?array
+    {
+        $stmt = Database::connection()->prepare('SELECT * FROM payments WHERE transaction_reference = ? LIMIT 1');
+        $stmt->execute([$reference]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    }
+
+    public static function setReference(int $orderId, string $reference): void
+    {
+        $stmt = Database::connection()->prepare('UPDATE payments SET transaction_reference = ? WHERE order_id = ? AND method = ?');
+        $stmt->execute([$reference, $orderId, 'safepay']);
+    }
+
+    public static function markPaid(int $orderId, string $reference): void
+    {
+        $pdo = Database::connection();
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare("UPDATE payments SET status = 'paid', transaction_reference = ? WHERE order_id = ? AND method = 'safepay' AND status <> 'paid'");
+            $stmt->execute([$reference, $orderId]);
+            $pdo->prepare("UPDATE orders SET status = 'processing' WHERE id = ? AND status = 'pending'")->execute([$orderId]);
+            $pdo->commit();
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+    }
+
     public static function save(array $data, ?int $id = null): int
     {
         $pdo = Database::connection();

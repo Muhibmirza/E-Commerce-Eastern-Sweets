@@ -4,6 +4,17 @@ declare(strict_types=1);
 require __DIR__ . '/../includes/db.php';
 
 $pdo = Database::connection();
+$migration = '20260826_storefront_refresh';
+$pdo->exec('CREATE TABLE IF NOT EXISTS app_migrations (
+    migration_key VARCHAR(120) PRIMARY KEY,
+    applied_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+$migrationCheck = $pdo->prepare('SELECT 1 FROM app_migrations WHERE migration_key = ? LIMIT 1');
+$migrationCheck->execute([$migration]);
+if ($migrationCheck->fetchColumn()) {
+    echo "Storefront refresh already applied.\n";
+    exit;
+}
 $pdo->beginTransaction();
 
 function slugify_seed(string $value): string
@@ -102,17 +113,17 @@ function product_seed(PDO $pdo, int $categoryId, array $data): void
 }
 
 $categories = [
-    'ice-cream-scoops' => ['name' => 'Ice Cream (Ice Scoop)', 'slug' => 'ice-cream-scoops', 'image' => 'uploads/categories/ice-cream-scoops.png', 'banner_image' => 'uploads/categories/ice-cream-scoops.png', 'tagline' => 'Creamy scoops served fresh and chilled', 'accent' => '#d85f88', 'sort_order' => 1],
-    'samosa-rolls' => ['name' => 'Samosa & Rolls', 'slug' => 'samosa-rolls', 'image' => 'uploads/categories/samosa-rolls.png', 'banner_image' => 'uploads/categories/samosa-rolls.png', 'tagline' => 'Crispy savoury bites with chutney dips', 'accent' => '#c98228', 'sort_order' => 2],
-    'cakes-pastries' => ['name' => 'Cakes & Pastries', 'slug' => 'cakes-pastries', 'image' => 'uploads/categories/cakes-pastries.png', 'banner_image' => 'uploads/categories/cakes-pastries.png', 'tagline' => 'Soft cakes, layered pastries, and fresh cream treats', 'accent' => '#9b4f3f', 'sort_order' => 3],
-    'kulfi-falooda' => ['name' => 'Kulfi & Falooda', 'slug' => 'kulfi-falooda', 'image' => 'uploads/categories/kulfi-falooda.png', 'banner_image' => 'uploads/categories/kulfi-falooda.png', 'tagline' => 'Classic kulfi and chilled falooda favourites', 'accent' => '#c6476f', 'sort_order' => 4],
-    'dairy' => ['name' => 'Dairy', 'slug' => 'dairy', 'image' => 'uploads/categories/dairy.png', 'banner_image' => 'uploads/categories/dairy.png', 'tagline' => 'Fresh milk, butter, yogurt, and dairy essentials', 'accent' => '#ead9b7', 'sort_order' => 5],
-    'gift-boxes' => ['name' => 'Gift Boxes', 'slug' => 'gift-boxes', 'image' => 'uploads/categories/gift-boxes.png', 'banner_image' => 'uploads/categories/gift-boxes.png', 'tagline' => 'Beautifully packed gifts for every occasion', 'accent' => '#d1ad57', 'sort_order' => 6],
-    'packed-items' => ['name' => 'Packed Items (Chips & Snacks)', 'slug' => 'packed-items', 'image' => 'uploads/categories/packed-items.png', 'banner_image' => 'uploads/categories/packed-items.png', 'tagline' => 'Crunchy chips, nimco, and snack packs', 'accent' => '#e3442f', 'sort_order' => 7],
-    'dry-fruits' => ['name' => 'Dry Fruits', 'slug' => 'dry-fruits', 'old_slug' => 'dry-fruit-sweets', 'image' => 'public/assets/images/products/product-37.png', 'banner_image' => 'public/assets/images/products/product-37.png', 'tagline' => 'Premium almonds, cashews, pistachios, and mixed dry fruits', 'accent' => '#b97738', 'sort_order' => 8],
+    'ice-cream-scoops' => ['name' => 'Ice Cream (Ice Scoop)', 'slug' => 'ice-cream-scoops', 'image' => 'public/assets/images/categories/ice-cream.jpg', 'banner_image' => 'uploads/categories/ice-cream-scoops.png', 'tagline' => 'Creamy scoops served fresh and chilled', 'accent' => '#d85f88', 'sort_order' => 1],
+    'samosa-rolls' => ['name' => 'Samosa & Rolls', 'slug' => 'samosa-rolls', 'image' => 'public/assets/images/categories/samosa-rolls.jpg', 'banner_image' => 'uploads/categories/samosa-rolls.png', 'tagline' => 'Crispy savoury bites with chutney dips', 'accent' => '#c98228', 'sort_order' => 2],
+    'cakes-pastries' => ['name' => 'Cakes & Pastries', 'slug' => 'cakes-pastries', 'image' => 'public/assets/images/categories/cakes-pastries.jpg', 'banner_image' => 'uploads/categories/cakes-pastries.png', 'tagline' => 'Soft cakes, layered pastries, and fresh cream treats', 'accent' => '#9b4f3f', 'sort_order' => 3],
+    'kulfi-falooda' => ['name' => 'Kulfi & Falooda', 'slug' => 'kulfi-falooda', 'image' => 'public/assets/images/categories/kulfi-falooda.jpg', 'banner_image' => 'uploads/categories/kulfi-falooda.png', 'tagline' => 'Classic kulfi and chilled falooda favourites', 'accent' => '#c6476f', 'sort_order' => 4],
+    'dairy' => ['name' => 'Dairy', 'slug' => 'dairy', 'image' => 'public/assets/images/categories/dairy.jpg', 'banner_image' => 'uploads/categories/dairy.png', 'tagline' => 'Fresh milk, butter, yogurt, and dairy essentials', 'accent' => '#ead9b7', 'sort_order' => 5],
+    'gift-boxes' => ['name' => 'Gift Boxes', 'slug' => 'gift-boxes', 'image' => 'public/assets/images/categories/gift-boxes.jpg', 'banner_image' => 'uploads/categories/gift-boxes.png', 'tagline' => 'Beautifully packed gifts for every occasion', 'accent' => '#d1ad57', 'sort_order' => 6],
+    'packed-items' => ['name' => 'Packed Items (Chips & Snacks)', 'slug' => 'packed-items', 'image' => 'public/assets/images/categories/packed-snacks.jpg', 'banner_image' => 'uploads/categories/packed-items.png', 'tagline' => 'Crunchy chips, nimco, and snack packs', 'accent' => '#e3442f', 'sort_order' => 7],
+    'dry-fruits' => ['name' => 'Dry Fruits', 'slug' => 'dry-fruits', 'old_slug' => 'dry-fruit-sweets', 'image' => 'public/assets/images/categories/dry-fruits.jpg', 'banner_image' => 'public/assets/images/products/product-37.png', 'tagline' => 'Premium almonds, cashews, pistachios, and mixed dry fruits', 'accent' => '#b97738', 'sort_order' => 8],
     'halwa' => ['name' => 'Halwa', 'slug' => 'halwa', 'image' => 'public/assets/images/products/product-41.png', 'banner_image' => 'public/assets/images/products/product-41.png', 'tagline' => 'Rich traditional halwa in every bite', 'accent' => '#b8792b', 'sort_order' => 9],
-    'bakery-items' => ['name' => 'Bakery Items', 'slug' => 'bakery-items', 'image' => 'uploads/categories/bakery-items.png', 'banner_image' => 'uploads/categories/bakery-items.png', 'tagline' => 'Freshly baked breads, donuts, biscuits, and pastries', 'accent' => '#be7b38', 'sort_order' => 10],
-    'mithai' => ['name' => 'Mithai (Sweet Box)', 'slug' => 'mithai', 'image' => 'uploads/categories/mithai-gold-platter.png', 'banner_image' => 'uploads/categories/mithai-gold-platter.png', 'tagline' => 'Handcrafted mithai and sweet boxes made fresh daily', 'accent' => '#d1ad57', 'animation' => 'mithai-spin', 'sort_order' => 11],
+    'bakery-items' => ['name' => 'Bakery Items', 'slug' => 'bakery-items', 'image' => 'public/assets/images/categories/bakery-items.jpg', 'banner_image' => 'uploads/categories/bakery-items.png', 'tagline' => 'Freshly baked breads, donuts, biscuits, and pastries', 'accent' => '#be7b38', 'sort_order' => 10],
+    'mithai' => ['name' => 'Mithai (Sweet Box)', 'slug' => 'mithai', 'image' => 'public/assets/images/products/product-33.png', 'banner_image' => 'uploads/categories/mithai-gold-platter.png', 'tagline' => 'Handcrafted mithai and sweet boxes made fresh daily', 'accent' => '#d1ad57', 'animation' => 'mithai-spin', 'sort_order' => 11],
 ];
 
 $ids = [];
@@ -176,5 +187,9 @@ foreach ($products as $categoryKey => $items) {
     }
 }
 
+$settings = $pdo->prepare('INSERT INTO settings (setting_key, setting_value, setting_group) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), setting_group = VALUES(setting_group)');
+$settings->execute(['background_pattern', 'public/assets/images/pattern.png', 'branding']);
+$recordMigration = $pdo->prepare('INSERT INTO app_migrations (migration_key) VALUES (?)');
+$recordMigration->execute([$migration]);
 $pdo->commit();
 echo "Category and product expansion seeded.\n";

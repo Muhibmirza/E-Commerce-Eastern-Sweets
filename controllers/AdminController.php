@@ -16,6 +16,7 @@ final class AdminController
         }
 
         require_admin();
+        try {
         switch ($route) {
             case 'admin':
             case 'admin/dashboard':
@@ -114,6 +115,15 @@ final class AdminController
             default:
                 http_response_code(404);
                 render('admin/resource', ['title' => 'Admin Page', 'rows' => [], 'columns' => [], 'resource' => 'Not Found'], 'admin');
+        }
+        } catch (RuntimeException $e) {
+            flash('error', $e->getMessage());
+            $params = [];
+            if (!empty($_POST['id'])) {
+                $params['id'] = (int)$_POST['id'];
+            }
+            $fallbackRoute = $route === 'admin/settings-save' ? 'admin/settings' : $route;
+            redirect($fallbackRoute, $params);
         }
     }
 
@@ -350,10 +360,7 @@ final class AdminController
         verify_csrf();
         $_POST['settings']['site_logo'] = upload_image('site_logo_file', 'logo', $_POST['settings']['site_logo'] ?? app_setting('site_logo', 'public/assets/images/logo.png'));
         $_POST['settings']['background_pattern'] = upload_image('background_pattern_file', 'content', $_POST['settings']['background_pattern'] ?? app_setting('background_pattern', ''));
-        $stmt = Database::connection()->prepare('UPDATE settings SET setting_value = ? WHERE setting_key = ?');
-        foreach ($_POST['settings'] ?? [] as $key => $value) {
-            $stmt->execute([(string)$value, (string)$key]);
-        }
+        SiteContent::setSettings($_POST['settings'] ?? []);
         flash('success', 'Settings saved.');
         redirect('admin/settings');
     }

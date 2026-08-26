@@ -30,12 +30,7 @@
                 <div class="image-manage">
                     <img src="<?= asset($productImage['image_path']) ?>" alt="" class="admin-preview-img">
                     <?php if (!(int)$productImage['is_primary']): ?>
-                        <form method="post" action="<?= url('admin/product-image-delete') ?>">
-                            <?= csrf_field() ?>
-                            <input type="hidden" name="product_id" value="<?= h($product['id']) ?>">
-                            <input type="hidden" name="image_id" value="<?= h($productImage['id']) ?>">
-                            <button class="btn btn-outline btn-sm" type="submit">Remove</button>
-                        </form>
+                        <button class="btn btn-outline btn-sm" type="submit" form="delete-product-image-<?= h($productImage['id']) ?>">Remove</button>
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>
@@ -44,3 +39,14 @@
     </section>
     <button class="btn btn-primary" type="submit">Save Product</button>
 </form>
+<?php if (!empty($product['images'])): ?>
+    <?php foreach ($product['images'] as $productImage): ?>
+        <?php if (!(int)$productImage['is_primary']): ?>
+            <form id="delete-product-image-<?= h($productImage['id']) ?>" method="post" action="<?= url('admin/product-image-delete') ?>">
+                <?= csrf_field() ?>
+                <input type="hidden" name="product_id" value="<?= h($product['id']) ?>">
+                <input type="hidden" name="image_id" value="<?= h($productImage['id']) ?>">
+            </form>
+        <?php endif; ?>
+    <?php endforeach; ?>
+<?php endif; ?>

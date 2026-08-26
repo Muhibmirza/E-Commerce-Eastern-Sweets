@@ -74,7 +74,7 @@ final class Order
             }
 
             $paymentStmt = $pdo->prepare('INSERT INTO payments (order_id, method, amount, status, transaction_reference) VALUES (?, ?, ?, ?, ?)');
-            $paymentStmt->execute([$orderId, $paymentMethod, $total, $paymentMethod === 'cod' ? 'pending' : 'sandbox_pending', 'TEST-' . $orderNumber]);
+            $paymentStmt->execute([$orderId, $paymentMethod, $total, $paymentMethod === 'cod' ? 'pending' : 'initiated', null]);
 
             if ($coupon) {
                 $pdo->prepare('UPDATE coupons SET used_count = used_count + 1 WHERE id = ?')->execute([$coupon['id']]);
@@ -162,6 +162,37 @@ final class Order
     {
         $stmt = Database::connection()->prepare('UPDATE orders SET status = ? WHERE id = ?');
         $stmt->execute([$status, $id]);
+    }
+
+    public static function cancelUnpaid(int $id): void
+    {
+        $pdo = Database::connection();
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare('SELECT o.status, p.status AS payment_status FROM orders o JOIN payments p ON p.order_id = o.id WHERE o.id = ? FOR UPDATE');
+            $stmt->execute([$id]);
+            $order = $stmt->fetch();
+            if (!$order || $order['status'] === 'cancelled' || $order['payment_status'] === 'paid') {
+                $pdo->commit();
+                return;
+            }
+
+            $items = self::items($id);
+            $variantStmt = $pdo->prepare('UPDATE product_variants SET stock = stock + ? WHERE id = ?');
+            $productStmt = $pdo->prepare('UPDATE products SET stock = stock + ?, sales_count = GREATEST(sales_count - ?, 0) WHERE id = ?');
+            foreach ($items as $item) {
+                $quantity = (int)$item['quantity'];
+                $variantStmt->execute([$quantity, (int)$item['variant_id']]);
+                $productStmt->execute([$quantity, $quantity, (int)$item['product_id']]);
+            }
+
+            $pdo->prepare("UPDATE payments SET status = 'cancelled' WHERE order_id = ? AND status <> 'paid'")->execute([$id]);
+            $pdo->prepare("UPDATE orders SET status = 'cancelled' WHERE id = ?")->execute([$id]);
+            $pdo->commit();
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
     }
 
     public static function dashboardStats(): array

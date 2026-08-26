@@ -14,6 +14,7 @@
         <div class="form-card"><h2>Payment Method</h2><div class="payment-grid">
             <?php foreach ($paymentMethods as $key => $method): ?><label class="payment-option"><input type="radio" name="payment_method" value="<?= h($key) ?>" <?= $key==='cod'?'checked':'' ?>><img src="<?= asset($method['logo']) ?>" alt="<?= h($method['label']) ?>"><span><?= h($method['label']) ?></span></label><?php endforeach; ?>
         </div></div>
+        <p class="form-help">Online payments open Safepay's secure hosted checkout. Available cards and wallets depend on the methods enabled in the Safepay sandbox account.</p>
         <button class="btn btn-primary" type="submit">Place Order</button>
     </form>
     <aside class="summary-card sticky-summary"><h2>Your Order</h2><?php foreach ($cart as $item): ?><p><span><?= h($item['variant']['product_name']) ?> × <?= h($item['quantity']) ?></span><strong><?= money($item['line_total']) ?></strong></p><?php endforeach; ?><p><span>Delivery</span><strong><?= money($delivery) ?></strong></p><p class="total"><span>Total</span><strong><?= money($total) ?></strong></p></aside>

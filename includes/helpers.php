@@ -19,6 +19,16 @@ function url(string $route = '', array $params = []): string
     return base_url($path) . ($query ? '?' . $query : '');
 }
 
+function absolute_url(string $route = '', array $params = []): string
+{
+    $forwardedProto = strtolower(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')[0]));
+    $scheme = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $forwardedProto === 'https') ? 'https' : 'http';
+    $forwardedHost = trim(explode(',', $_SERVER['HTTP_X_FORWARDED_HOST'] ?? '')[0]);
+    $host = $forwardedHost !== '' ? $forwardedHost : ($_SERVER['HTTP_HOST'] ?? 'localhost');
+
+    return $scheme . '://' . $host . url($route, $params);
+}
+
 function base_url(string $path = ''): string
 {
     $dir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
@@ -49,8 +59,9 @@ function csrf_field(): string
 function verify_csrf(): void
 {
     $token = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-    if (!hash_equals($_SESSION['_csrf'] ?? '', (string)$token)) {
-        http_response_code(419);
+    $sessionToken = $_SESSION['_csrf'] ?? '';
+    if (!is_string($sessionToken) || $sessionToken === '' || !is_string($token) || $token === '' || !hash_equals($sessionToken, $token)) {
+        http_response_code(403);
         exit('Security token expired. Please refresh and try again.');
     }
 }
@@ -179,14 +190,26 @@ function upload_image(string $field, string $folder, ?string $existing = null): 
     }
 
     $file = $_FILES[$field];
-    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
-        throw new RuntimeException('Image upload failed.');
+    $uploadError = (int)($file['error'] ?? UPLOAD_ERR_OK);
+    if ($uploadError !== UPLOAD_ERR_OK) {
+        $messages = [
+            UPLOAD_ERR_INI_SIZE => 'The image is larger than the server upload limit.',
+            UPLOAD_ERR_FORM_SIZE => 'The image is larger than the form upload limit.',
+            UPLOAD_ERR_PARTIAL => 'The image upload was interrupted. Please try again.',
+            UPLOAD_ERR_NO_TMP_DIR => 'The server upload folder is unavailable.',
+            UPLOAD_ERR_CANT_WRITE => 'The server could not write the uploaded image.',
+            UPLOAD_ERR_EXTENSION => 'The server rejected the uploaded image.',
+        ];
+        throw new RuntimeException($messages[$uploadError] ?? 'Image upload failed.');
     }
     if (($file['size'] ?? 0) > 4 * 1024 * 1024) {
         throw new RuntimeException('Image must be 4MB or smaller.');
     }
 
     $tmp = (string)$file['tmp_name'];
+    if ($tmp === '' || !is_uploaded_file($tmp)) {
+        throw new RuntimeException('The uploaded image could not be verified.');
+    }
     $mime = mime_content_type($tmp) ?: '';
     $allowed = [
         'image/jpeg' => 'jpg',
@@ -201,6 +224,9 @@ function upload_image(string $field, string $folder, ?string $existing = null): 
     $targetDir = __DIR__ . '/../uploads/' . $folder;
     if (!is_dir($targetDir) && !mkdir($targetDir, 0775, true) && !is_dir($targetDir)) {
         throw new RuntimeException('Upload folder could not be created.');
+    }
+    if (!is_writable($targetDir)) {
+        throw new RuntimeException('Upload folder is not writable.');
     }
 
     $name = bin2hex(random_bytes(8)) . '-' . time() . '.' . $allowed[$mime];

@@ -1,0 +1,9 @@
+{
+    "name": "eastern-sweets/storefront",
+    "description": "Branded PHP and MySQL e-commerce storefront and administration suite for Eastern Sweets.",
+    "license": "proprietary",
+    "require": {
+        "getsafepay/safepay-php": "1.0",
+        "composer/ca-bundle": "1.5"
+    }
+}

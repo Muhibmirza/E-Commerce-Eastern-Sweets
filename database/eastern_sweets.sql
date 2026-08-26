@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS eastern_sweets CHARACTER SET utf8mb4 COLLATE utf8m
 USE eastern_sweets;
 
 SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS newsletter_subscribers, settings, banners, reviews, coupons, payments, order_items, orders, product_variants, product_images, products, categories, admins, users;
+DROP TABLE IF EXISTS app_migrations, newsletter_subscribers, settings, banners, reviews, coupons, payments, order_items, orders, product_variants, product_images, products, categories, admins, users;
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE users (
@@ -32,6 +32,12 @@ CREATE TABLE categories (
   name VARCHAR(120) NOT NULL,
   slug VARCHAR(140) NOT NULL UNIQUE,
   image_path VARCHAR(255) NOT NULL,
+  banner_image_path VARCHAR(255) NULL,
+  banner_tagline VARCHAR(255) NULL,
+  banner_cta_text VARCHAR(100) NULL,
+  banner_cta_link VARCHAR(255) NULL,
+  banner_accent VARCHAR(20) NULL,
+  banner_animation VARCHAR(50) NOT NULL DEFAULT 'slide-3d',
   sort_order INT NOT NULL DEFAULT 0,
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -190,12 +196,18 @@ INSERT INTO users (name, email, phone, password_hash, default_address) VALUES
 ('Ayesha Khan', 'ayesha@example.com', '03001234567', '$2y$10$PsO/rblVSzrEIZTnv.6uK.IYrQf0xwL4waaNgSrrq0KoK8BwBHhnO', 'DHA, Karachi'),
 ('Hamza Rauf', 'hamza@example.com', '03019876543', '$2y$10$PsO/rblVSzrEIZTnv.6uK.IYrQf0xwL4waaNgSrrq0KoK8BwBHhnO', 'PECHS, Karachi');
 
-INSERT INTO categories (name, slug, image_path, sort_order) VALUES
-('Mithai', 'mithai', 'public/assets/images/products/product-33.png', 1),
-('Halwa', 'halwa', 'public/assets/images/products/product-41.png', 2),
-('Dry Fruit Sweets', 'dry-fruit-sweets', 'public/assets/images/products/product-37.png', 3),
-('Bakery Items', 'bakery-items', 'public/assets/images/products/product-11.png', 4),
-('Gift Boxes', 'gift-boxes', 'public/assets/images/products/product-29.png', 5);
+INSERT INTO categories (name, slug, image_path, banner_image_path, banner_tagline, banner_cta_text, banner_cta_link, banner_accent, banner_animation, sort_order) VALUES
+('Mithai (Sweet Box)', 'mithai', 'public/assets/images/products/product-33.png', 'uploads/categories/mithai-gold-platter.png', 'Handcrafted mithai and sweet boxes made fresh daily', 'Shop Mithai', 'category/mithai', '#d1ad57', 'mithai-spin', 11),
+('Halwa', 'halwa', 'public/assets/images/products/product-41.png', 'public/assets/images/products/product-41.png', 'Rich traditional halwa in every bite', 'Shop Halwa', 'category/halwa', '#b8792b', 'slide-3d', 9),
+('Dry Fruits', 'dry-fruits', 'public/assets/images/categories/dry-fruits.jpg', 'public/assets/images/products/product-37.png', 'Premium almonds, cashews, pistachios, and mixed dry fruits', 'Shop Dry Fruits', 'category/dry-fruits', '#b97738', 'slide-3d', 8),
+('Bakery Items', 'bakery-items', 'public/assets/images/categories/bakery-items.jpg', 'uploads/categories/bakery-items.png', 'Freshly baked breads, donuts, biscuits, and pastries', 'Shop Bakery Items', 'category/bakery-items', '#be7b38', 'slide-3d', 10),
+('Gift Boxes', 'gift-boxes', 'public/assets/images/categories/gift-boxes.jpg', 'uploads/categories/gift-boxes.png', 'Beautifully packed gifts for every occasion', 'Shop Gift Boxes', 'category/gift-boxes', '#d1ad57', 'slide-3d', 6),
+('Ice Cream (Ice Scoop)', 'ice-cream-scoops', 'public/assets/images/categories/ice-cream.jpg', 'uploads/categories/ice-cream-scoops.png', 'Creamy scoops served fresh and chilled', 'Shop Ice Cream', 'category/ice-cream-scoops', '#d85f88', 'slide-3d', 1),
+('Samosa & Rolls', 'samosa-rolls', 'public/assets/images/categories/samosa-rolls.jpg', 'uploads/categories/samosa-rolls.png', 'Crispy savoury bites with chutney dips', 'Shop Samosa & Rolls', 'category/samosa-rolls', '#c98228', 'slide-3d', 2),
+('Cakes & Pastries', 'cakes-pastries', 'public/assets/images/categories/cakes-pastries.jpg', 'uploads/categories/cakes-pastries.png', 'Soft cakes, layered pastries, and fresh cream treats', 'Shop Cakes & Pastries', 'category/cakes-pastries', '#9b4f3f', 'slide-3d', 3),
+('Kulfi & Falooda', 'kulfi-falooda', 'public/assets/images/categories/kulfi-falooda.jpg', 'uploads/categories/kulfi-falooda.png', 'Classic kulfi and chilled falooda favourites', 'Shop Kulfi & Falooda', 'category/kulfi-falooda', '#c6476f', 'slide-3d', 4),
+('Dairy', 'dairy', 'public/assets/images/categories/dairy.jpg', 'uploads/categories/dairy.png', 'Fresh milk, butter, yogurt, and dairy essentials', 'Shop Dairy', 'category/dairy', '#ead9b7', 'slide-3d', 5),
+('Packed Items (Chips & Snacks)', 'packed-items', 'public/assets/images/categories/packed-snacks.jpg', 'uploads/categories/packed-items.png', 'Crunchy chips, nimco, and snack packs', 'Shop Packed Items', 'category/packed-items', '#e3442f', 'slide-3d', 7);
 
 INSERT INTO products (category_id, name, slug, short_description, description, ingredients, allergens, stock, sales_count, is_featured) VALUES
 (1,'Assorted Mithai Box','assorted-mithai-box','A premium mix of Eastern Sweets classics.','A celebration-ready assortment with gulab jamun, cham cham, barfi, laddu, and dry fruit mithai packed fresh.','Milk, sugar, khoya, nuts, ghee','Milk, nuts',60,85,1),
@@ -304,15 +316,7 @@ INSERT INTO settings (setting_key, setting_value, setting_group) VALUES
 ('instagram_url','#','social'),
 ('whatsapp_url','#','social');
 
--- Content-management upgrade: branding, category banners, homepage blocks, testimonials, and static pages.
-ALTER TABLE categories
-  ADD COLUMN IF NOT EXISTS banner_image_path VARCHAR(255) NULL AFTER image_path,
-  ADD COLUMN IF NOT EXISTS banner_tagline VARCHAR(255) NULL AFTER banner_image_path,
-  ADD COLUMN IF NOT EXISTS banner_cta_text VARCHAR(100) NULL AFTER banner_tagline,
-  ADD COLUMN IF NOT EXISTS banner_cta_link VARCHAR(255) NULL AFTER banner_cta_text,
-  ADD COLUMN IF NOT EXISTS banner_accent VARCHAR(20) NULL AFTER banner_cta_link,
-  ADD COLUMN IF NOT EXISTS banner_animation VARCHAR(50) NOT NULL DEFAULT 'slide-3d' AFTER banner_accent;
-
+-- Content-management upgrade: homepage blocks, testimonials, and static pages.
 CREATE TABLE IF NOT EXISTS usp_blocks (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(120) NOT NULL,
@@ -385,7 +389,7 @@ ON DUPLICATE KEY UPDATE title = VALUES(title), body = VALUES(body);
 
 INSERT INTO settings (setting_key, setting_value, setting_group) VALUES
 ('site_logo','public/assets/images/logo.png','branding'),
-('background_pattern','','branding'),
+('background_pattern','public/assets/images/pattern.png','branding'),
 ('theme_primary','#0b4e3d','branding'),
 ('theme_secondary','#d1ad57','branding'),
 ('theme_accent','#8f2432','branding'),
