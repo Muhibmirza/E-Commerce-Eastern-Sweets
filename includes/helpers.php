@@ -172,15 +172,35 @@ function app_setting(string $key, string $fallback = ''): string
 
 function app_theme_style(): string
 {
-    $primary = app_setting('theme_primary', '#0b4e3d');
-    $secondary = app_setting('theme_secondary', '#d1ad57');
-    $accent = app_setting('theme_accent', '#8b1e2d');
+    $color = static function (string $key, string $fallback): string {
+        $value = app_setting($key, $fallback);
+        return preg_match('/^#[0-9a-fA-F]{6}$/', $value) ? $value : $fallback;
+    };
+
+    $primary = $color('theme_primary', '#0b4e3d');
+    $secondary = $color('theme_secondary', '#d1ad57');
+    $accent = $color('theme_accent', '#8b1e2d');
     $pattern = app_setting('background_pattern', '');
-    $css = ':root{--color-primary:' . h($primary) . ';--color-secondary:' . h($secondary) . ';--color-accent:' . h($accent) . ';';
+    $css = ':root{--color-primary:' . $primary . ';--color-secondary:' . $secondary . ';--color-accent:' . $accent . ';';
     if ($pattern !== '') {
-        $css .= '--site-pattern:url("' . h(asset($pattern)) . '");';
+        $patternUrl = asset($pattern);
+        if (!preg_match('#^[a-zA-Z0-9_./:%?&=\-]+$#', $patternUrl)) {
+            $patternUrl = '';
+        }
+        if ($patternUrl !== '') {
+            $css .= '--site-pattern:url(' . $patternUrl . ');';
+        }
     }
-    return '<style>' . $css . '}</style>';
+    $css .= '}';
+    if ($pattern !== '' && $patternUrl !== '') {
+        $patternLayers = 'url(' . $patternUrl . '),url(' . $patternUrl . '),url(' . $patternUrl . ')';
+        $css .= 'body{background-color:#e4ebe5;background-image:' . $patternLayers . '!important;'
+            . 'background-position:center top,center top,center top;background-repeat:repeat,repeat,repeat;'
+            . 'background-size:460px auto,460px auto,460px auto;background-attachment:fixed,fixed,fixed;}';
+        $css .= 'body::before{display:none;}';
+    }
+
+    return '<style>' . $css . '</style>';
 }
 
 function upload_image(string $field, string $folder, ?string $existing = null): ?string
