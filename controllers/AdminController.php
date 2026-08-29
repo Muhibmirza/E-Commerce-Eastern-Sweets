@@ -352,11 +352,11 @@ final class AdminController
         }
         $imagePath = upload_image('image_file', 'banners', trim((string)($_POST['image_path'] ?? ($existing ?: 'public/assets/images/products/product-01.png'))));
         $data = [
-            trim((string)$_POST['title']),
-            trim((string)$_POST['subtitle']),
-            trim((string)$_POST['description']),
-            trim((string)$_POST['button_text']),
-            trim((string)$_POST['link_url']),
+            trim((string)($_POST['title'] ?? '')),
+            trim((string)($_POST['subtitle'] ?? '')),
+            trim((string)($_POST['description'] ?? '')),
+            trim((string)($_POST['button_text'] ?? '')),
+            trim((string)($_POST['link_url'] ?? '')),
             $imagePath ?: 'public/assets/images/products/product-01.png',
             (int)($_POST['sort_order'] ?? 0),
             isset($_POST['is_active']) ? 1 : 0,

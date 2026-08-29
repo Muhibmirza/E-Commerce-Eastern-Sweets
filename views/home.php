@@ -1,13 +1,6 @@
 <section class="hero" data-slider>
     <?php foreach ($banners as $i => $banner): ?>
-        <article class="hero-slide <?= $i === 0 ? 'is-active' : '' ?>" style="background-image: linear-gradient(90deg, rgba(11,78,61,.9), rgba(11,78,61,.34)), url('<?= h(asset($banner['image_path'])) ?>')">
-            <div class="container hero-content">
-                <p class="eyebrow"><?= h($banner['subtitle']) ?></p>
-                <h1><?= h($banner['title']) ?></h1>
-                <p><?= h($banner['description']) ?></p>
-                <a class="btn btn-primary" href="<?= h($banner['link_url']) ?>"><?= h($banner['button_text']) ?></a>
-            </div>
-        </article>
+        <article class="hero-slide <?= $i === 0 ? 'is-active' : '' ?>" style="background-image: url('<?= h(asset($banner['image_path'])) ?>')" aria-label="<?= h($banner['title'] ?: ('Banner ' . ($i + 1))) ?>"></article>
     <?php endforeach; ?>
     <button class="slider-arrow prev" data-slide-prev aria-label="Previous">&#8249;</button>
     <button class="slider-arrow next" data-slide-next aria-label="Next">&#8250;</button>

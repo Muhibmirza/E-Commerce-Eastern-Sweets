@@ -3,12 +3,13 @@
     <?= csrf_field() ?><input type="hidden" name="id" value="<?= h($banner['id'] ?? '') ?>">
     <section class="form-card">
         <h2>Banner Details</h2>
+        <p class="muted">Only a banner image is needed. Text and link fields are optional and are kept for future use.</p>
         <div class="form-grid">
-            <label>Title<input name="title" required value="<?= h($banner['title'] ?? '') ?>"></label>
-            <label>Subtitle<input name="subtitle" value="<?= h($banner['subtitle'] ?? '') ?>"></label>
-            <label class="full">Description<input name="description" value="<?= h($banner['description'] ?? '') ?>"></label>
-            <label>Button Text<input name="button_text" value="<?= h($banner['button_text'] ?? 'Shop Now') ?>"></label>
-            <label>Link URL<input name="link_url" value="<?= h($banner['link_url'] ?? url('shop')) ?>"></label>
+            <label>Title (optional)<input name="title" value="<?= h($banner['title'] ?? '') ?>"></label>
+            <label>Subtitle (optional)<input name="subtitle" value="<?= h($banner['subtitle'] ?? '') ?>"></label>
+            <label class="full">Description (optional)<input name="description" value="<?= h($banner['description'] ?? '') ?>"></label>
+            <label>Button Text (optional)<input name="button_text" value="<?= h($banner['button_text'] ?? '') ?>"></label>
+            <label>Link URL (optional)<input name="link_url" value="<?= h($banner['link_url'] ?? '') ?>"></label>
             <label class="full">Image Path<input name="image_path" value="<?= h($imagePath) ?>"></label>
             <label class="full">Upload/Replace Image<input name="image_file" type="file" accept="image/jpeg,image/png,image/webp" data-live-preview="#banner-preview"></label>
             <div class="upload-preview full"><img id="banner-preview" src="<?= asset($imagePath) ?>" alt="" class="admin-preview-img"></div>
