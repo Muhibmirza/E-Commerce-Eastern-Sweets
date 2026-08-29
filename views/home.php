@@ -1,6 +1,6 @@
 <section class="hero" data-slider>
     <?php foreach ($banners as $i => $banner): ?>
-        <article class="hero-slide <?= $i === 0 ? 'is-active' : '' ?>" aria-label="<?= h($banner['title'] ?: ('Banner ' . ($i + 1))) ?>">
+        <article class="hero-slide <?= $i === 0 ? 'is-active' : '' ?>" style="--banner-image:url('<?= h(asset($banner['image_path'])) ?>')" aria-label="<?= h($banner['title'] ?: ('Banner ' . ($i + 1))) ?>">
             <img src="<?= h(asset($banner['image_path'])) ?>" alt="" <?= $i === 0 ? 'fetchpriority="high"' : 'loading="eager"' ?>>
         </article>
     <?php endforeach; ?>

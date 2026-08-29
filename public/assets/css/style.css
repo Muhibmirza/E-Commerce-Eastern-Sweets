@@ -121,7 +121,8 @@ label { display: grid; gap: 7px; font-weight: 700; color: var(--color-primary); 
 .hero.is-timing::after { animation: heroTimer 2s linear both; }
 .hero-slide { position: absolute; inset: 0; opacity: 0; transform: translateX(3%) scale(1.02); transition: opacity .58s ease, transform .58s cubic-bezier(.2,.7,.2,1); display: flex; align-items: center; }
 .hero-slide.is-active { opacity: 1; transform: translateX(0) scale(1); z-index: 1; }
-.hero-slide img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.hero-slide::before { content: ""; position: absolute; inset: -22px; background-image: var(--banner-image); background-size: cover; background-position: center; filter: blur(18px) saturate(.75); opacity: .38; transform: scale(1.04); }
+.hero-slide img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; object-position: center; filter: drop-shadow(0 12px 28px rgba(11,35,28,.16)); }
 .hero-content { color: #fff; max-width: 650px; }
 .hero-content > * { animation: heroCopy .7s ease both; }
 .hero h1 { color: #fff; }
