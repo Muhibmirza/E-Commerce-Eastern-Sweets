@@ -10,7 +10,6 @@
         <div class="shop-toolbar">
             <details class="filter-disclosure">
                 <summary><span>Refine &amp; Sort</span><small>Category, price and order</small></summary>
-                <button class="filter-backdrop" type="button" data-filter-close aria-label="Close filters"></button>
                 <div class="filter-panel">
             <div class="filter-panel-head"><div><p class="eyebrow">Shop controls</p><h2>Refine &amp; Sort</h2></div><button class="icon-button" type="button" data-filter-close aria-label="Close filters">&times;</button></div>
             <form method="get" action="<?= !empty($category) ? url('category/' . $category['slug']) : url('shop') ?>">

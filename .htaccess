@@ -2,6 +2,12 @@ Options -Indexes
 DirectorySlash Off
 RewriteEngine On
 
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+RewriteRule ^(?:database|deploy)/ - [F,L]
+
 RewriteRule ^admin/login/?$ index.php?route=admin/login [QSA,L]
 RewriteRule ^admin/?$ index.php?route=admin/dashboard [QSA,L]
 

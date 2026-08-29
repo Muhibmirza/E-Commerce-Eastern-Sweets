@@ -48,6 +48,9 @@
             <label class="full">Address<input name="settings[footer_address]" value="<?= h($settings['footer_address'] ?? '') ?>"></label>
             <label>Phone<input name="settings[footer_phone]" value="<?= h($settings['footer_phone'] ?? '') ?>"></label>
             <label>Hours<input name="settings[footer_hours]" value="<?= h($settings['footer_hours'] ?? '') ?>"></label>
+            <label>Email<input name="settings[contact_email]" type="email" value="<?= h($settings['contact_email'] ?? '') ?>"></label>
+            <label>Contact Location Title<input name="settings[contact_location_title]" value="<?= h($settings['contact_location_title'] ?? '') ?>"></label>
+            <label class="full">Google Maps Link<input name="settings[contact_map_link]" type="url" value="<?= h($settings['contact_map_link'] ?? '') ?>"></label>
             <label class="full">Social Links / Labels<input name="settings[footer_socials]" value="<?= h($settings['footer_socials'] ?? '') ?>"></label>
             <label class="full">Payment Methods<input name="settings[footer_payments]" value="<?= h($settings['footer_payments'] ?? '') ?>"></label>
         </div>
