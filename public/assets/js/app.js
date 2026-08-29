@@ -6,6 +6,10 @@
     document.querySelector('.nav-actions')?.classList.toggle('is-open');
   });
 
+  document.querySelectorAll('[data-filter-close]').forEach(button => {
+    button.addEventListener('click', () => button.closest('.filter-disclosure')?.removeAttribute('open'));
+  });
+
   const slider = document.querySelector('[data-slider]');
   if (slider) {
     const slides = [...slider.querySelectorAll('.hero-slide')];
@@ -168,6 +172,9 @@
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach((el, index) => {
     el.style.setProperty('--reveal-delay', `${Math.min(index % 8, 7) * 55}ms`);
+    if (el.classList.contains('product-card')) {
+      el.style.setProperty('--reveal-x', index % 2 === 0 ? '-54px' : '54px');
+    }
     observer.observe(el);
   });
 
