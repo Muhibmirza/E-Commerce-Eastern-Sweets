@@ -3,7 +3,7 @@
     <?= csrf_field() ?><input type="hidden" name="id" value="<?= h($banner['id'] ?? '') ?>">
     <section class="form-card">
         <h2>Banner Details</h2>
-        <p class="muted">Only a banner image is needed. Text and link fields are optional and are kept for future use.</p>
+        <p class="muted">Only a banner image is needed. Text and link fields are optional. For a sharp, uncropped result use a landscape image around 1920 × 700 px; the storefront now always shows the complete image.</p>
         <div class="form-grid">
             <label>Title (optional)<input name="title" value="<?= h($banner['title'] ?? '') ?>"></label>
             <label>Subtitle (optional)<input name="subtitle" value="<?= h($banner['subtitle'] ?? '') ?>"></label>

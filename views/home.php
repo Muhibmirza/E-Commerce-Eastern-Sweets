@@ -1,6 +1,8 @@
 <section class="hero" data-slider>
     <?php foreach ($banners as $i => $banner): ?>
-        <article class="hero-slide <?= $i === 0 ? 'is-active' : '' ?>" style="background-image: url('<?= h(asset($banner['image_path'])) ?>')" aria-label="<?= h($banner['title'] ?: ('Banner ' . ($i + 1))) ?>"></article>
+        <article class="hero-slide <?= $i === 0 ? 'is-active' : '' ?>" aria-label="<?= h($banner['title'] ?: ('Banner ' . ($i + 1))) ?>">
+            <img src="<?= h(asset($banner['image_path'])) ?>" alt="" <?= $i === 0 ? 'fetchpriority="high"' : 'loading="eager"' ?>>
+        </article>
     <?php endforeach; ?>
     <button class="slider-arrow prev" data-slide-prev aria-label="Previous">&#8249;</button>
     <button class="slider-arrow next" data-slide-next aria-label="Next">&#8250;</button>
@@ -29,7 +31,7 @@
 <section class="section section-tint">
     <div class="container">
         <div class="section-head centered reveal">
-            <div><p class="eyebrow"><?= h($settings['home_featured_eyebrow'] ?? 'Best sellers') ?></p><h2><?= h($settings['home_featured_title'] ?? 'Most loved mithai') ?></h2></div>
+            <div><p class="eyebrow"><?= h($settings['home_featured_eyebrow'] ?? 'Best sellers') ?></p><h2>Most Loved Items</h2></div>
         </div>
         <div class="product-grid">
             <?php foreach ($products as $product): require __DIR__ . '/partials/product-card.php'; endforeach; ?>

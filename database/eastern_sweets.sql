@@ -396,7 +396,7 @@ INSERT INTO settings (setting_key, setting_value, setting_group) VALUES
 ('home_categories_eyebrow','Shop by mood','homepage'),
 ('home_categories_title','Fresh categories','homepage'),
 ('home_featured_eyebrow','Best sellers','homepage'),
-('home_featured_title','Most loved mithai','homepage'),
+('home_featured_title','Most Loved Items','homepage'),
 ('promo_eyebrow','Celebration Boxes','homepage'),
 ('promo_title','Build a premium mithai box for Eid, weddings, or corporate gifting.','homepage'),
 ('promo_body','Choose fresh assorted mithai, dry fruit sweets, and bakery favourites packed in Eastern Sweets signature boxes.','homepage'),

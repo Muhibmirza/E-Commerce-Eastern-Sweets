@@ -196,7 +196,7 @@ function app_theme_style(): string
         $patternLayers = 'url(' . $patternUrl . '),url(' . $patternUrl . '),url(' . $patternUrl . ')';
         $css .= 'body{background-color:#e4ebe5;background-image:' . $patternLayers . '!important;'
             . 'background-position:center top,center top,center top;background-repeat:repeat,repeat,repeat;'
-            . 'background-size:460px auto,460px auto,460px auto;background-attachment:fixed,fixed,fixed;}';
+            . 'background-size:760px auto,760px auto,760px auto;background-attachment:fixed,fixed,fixed;}';
         $css .= 'body::before{display:none;}';
     }
 

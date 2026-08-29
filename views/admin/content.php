@@ -20,7 +20,7 @@
             <label>Categories Eyebrow<input name="settings[home_categories_eyebrow]" value="<?= h($settings['home_categories_eyebrow'] ?? 'Shop by mood') ?>"></label>
             <label>Categories Title<input name="settings[home_categories_title]" value="<?= h($settings['home_categories_title'] ?? 'Fresh categories') ?>"></label>
             <label>Featured Eyebrow<input name="settings[home_featured_eyebrow]" value="<?= h($settings['home_featured_eyebrow'] ?? 'Best sellers') ?>"></label>
-            <label>Featured Title<input name="settings[home_featured_title]" value="<?= h($settings['home_featured_title'] ?? 'Most loved mithai') ?>"></label>
+            <label>Featured Title<input name="settings[home_featured_title]" value="<?= h($settings['home_featured_title'] ?? 'Most Loved Items') ?>"></label>
             <label>Testimonials Eyebrow<input name="settings[testimonials_eyebrow]" value="<?= h($settings['testimonials_eyebrow'] ?? 'Customer notes') ?>"></label>
             <label>Testimonials Title<input name="settings[testimonials_title]" value="<?= h($settings['testimonials_title'] ?? 'Sweet words') ?>"></label>
             <label>Newsletter Eyebrow<input name="settings[newsletter_eyebrow]" value="<?= h($settings['newsletter_eyebrow'] ?? 'Fresh offers') ?>"></label>
@@ -84,7 +84,7 @@
 </section>
 
 <section class="table-card">
-    <div class="card-head"><h2>Static Pages</h2></div>
+    <div class="card-head"><div><h2>Website Pages</h2><p class="muted">Edit About, Contact, FAQs, policies and other customer-facing page content.</p></div></div>
     <div class="responsive-table">
         <table class="data-table"><thead><tr><th>Slug</th><th>Title</th><th class="action-col">Actions</th></tr></thead><tbody>
         <?php foreach ($pages as $page): ?>

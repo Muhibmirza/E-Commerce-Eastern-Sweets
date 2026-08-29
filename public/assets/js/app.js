@@ -23,7 +23,7 @@
       };
       const play = () => {
         clearInterval(timer);
-        timer = setInterval(() => show(current + 1), 4500);
+        timer = setInterval(() => show(current + 1), 2000);
       };
       slider.querySelector('[data-slide-prev]')?.addEventListener('click', () => { show(current - 1); play(); });
       slider.querySelector('[data-slide-next]')?.addEventListener('click', () => { show(current + 1); play(); });
@@ -166,7 +166,27 @@
       if (entry.isIntersecting) entry.target.classList.add('is-visible');
     });
   }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  document.querySelectorAll('.reveal').forEach((el, index) => {
+    el.style.setProperty('--reveal-delay', `${Math.min(index % 8, 7) * 55}ms`);
+    observer.observe(el);
+  });
+
+  if (window.matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll('.category-card, .product-card, .stat-card, .summary-card, .map-card').forEach(card => {
+      card.classList.add('tilt-card');
+      card.addEventListener('mousemove', event => {
+        const rect = card.getBoundingClientRect();
+        const rotateY = ((event.clientX - rect.left) / rect.width - .5) * 7;
+        const rotateX = (((event.clientY - rect.top) / rect.height - .5) * -7);
+        card.style.setProperty('--card-rx', `${rotateX.toFixed(2)}deg`);
+        card.style.setProperty('--card-ry', `${rotateY.toFixed(2)}deg`);
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.setProperty('--card-rx', '0deg');
+        card.style.setProperty('--card-ry', '0deg');
+      });
+    });
+  }
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const bannerObserver = new IntersectionObserver((entries) => {

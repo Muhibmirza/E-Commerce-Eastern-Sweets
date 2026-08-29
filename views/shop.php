@@ -6,9 +6,11 @@
     </section>
 <?php endif; ?>
 <section class="section">
-    <div class="container shop-layout">
-        <aside class="filter-panel">
-            <h2>Filters</h2>
+    <div class="container">
+        <div class="shop-toolbar">
+            <details class="filter-disclosure">
+                <summary><span>Refine &amp; Sort</span><small>Category, price and order</small></summary>
+                <div class="filter-panel">
             <form method="get" action="<?= !empty($category) ? url('category/' . $category['slug']) : url('shop') ?>">
                 <label>Search<input name="q" value="<?= h($filters['q']) ?>" placeholder="Product name"></label>
                 <?php if (empty($category)): ?>
@@ -20,9 +22,11 @@
                 <label>Sort<select name="sort"><option value="popular">Popularity</option><option value="price_asc" <?= $filters['sort']==='price_asc'?'selected':'' ?>>Price Low-High</option><option value="price_desc" <?= $filters['sort']==='price_desc'?'selected':'' ?>>Price High-Low</option><option value="newest" <?= $filters['sort']==='newest'?'selected':'' ?>>Newest</option></select></label>
                 <button class="btn btn-primary" type="submit">Apply Filters</button>
             </form>
-        </aside>
-        <div>
+                </div>
+            </details>
             <div class="results-head"><strong><?= h($total) ?> products</strong><span>Showing page <?= h($page) ?></span></div>
+        </div>
+        <div>
             <div class="product-grid shop-grid">
                 <?php foreach ($products as $product): require __DIR__ . '/partials/product-card.php'; endforeach; ?>
             </div>
