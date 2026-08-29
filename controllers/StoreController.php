@@ -470,6 +470,31 @@ final class StoreController
         render('static/page', ['title' => $page['title'], 'body' => $page['body'], 'slug' => $slug]);
     }
 
+    public function robots(): void
+    {
+        header('Content-Type: text/plain; charset=utf-8');
+        echo "User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /account/\nDisallow: /checkout\nSitemap: " . absolute_url('sitemap.xml') . "\n";
+    }
+
+    public function sitemap(): void
+    {
+        header('Content-Type: application/xml; charset=utf-8');
+        $urls = [absolute_url('home'), absolute_url('shop'), absolute_url('about'), absolute_url('contact'), absolute_url('faqs')];
+        foreach (Category::all() as $category) {
+            $urls[] = absolute_url('category/' . $category['slug']);
+        }
+        $products = Database::connection()->query('SELECT id FROM products WHERE is_active = 1 ORDER BY id')->fetchAll();
+        foreach ($products as $product) {
+            $urls[] = absolute_url('product', ['id' => (int)$product['id']]);
+        }
+        echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        foreach (array_unique($urls) as $url) {
+            echo '<url><loc>' . htmlspecialchars($url, ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</loc></url>';
+        }
+        echo '</urlset>';
+    }
+
     private function banners(): array
     {
         return Database::connection()->query('SELECT * FROM banners WHERE is_active = 1 ORDER BY sort_order LIMIT 4')->fetchAll();

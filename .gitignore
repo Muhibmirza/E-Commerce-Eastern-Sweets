@@ -4,5 +4,9 @@
 /server.out.log
 /qa-*.png
 /.qa-*.png
+/.chrome-qa*/
+/desktop-*.png
+/mobile-*.png
+/final-*.png
 /uploads/content/*
 /uploads/products/*

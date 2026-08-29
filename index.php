@@ -120,6 +120,12 @@ try {
         case 'newsletter/subscribe':
             $store->subscribeNewsletter();
             break;
+        case 'robots.txt':
+            $store->robots();
+            break;
+        case 'sitemap.xml':
+            $store->sitemap();
+            break;
         case 'about':
         case 'contact':
         case 'faqs':

@@ -36,9 +36,9 @@ Change the seeded administrator password before using the application publicly.
 
 ## Deployment
 
-The included `Dockerfile`, `railway.json`, and `deploy/start.sh` support Railway deployment. Configure the MySQL environment variables, application URL, session security, and Safepay keys in the hosting dashboard. Startup imports an empty database and applies each recorded data migration only once.
+The application can run on standard PHP/MySQL shared hosting or a Docker-compatible host. For shared hosting, upload the project into the web root, import `database/eastern_sweets.sql`, configure database credentials through environment variables or `includes/db.php`, and keep the `uploads/` directory writable and persistent.
 
-For persistent admin uploads, mount a Railway volume at `/var/www/html/uploads`. Without a persistent volume or object storage, uploaded files can be lost when a container is replaced during deployment.
+For container hosting, the included `Dockerfile` and `deploy/start.sh` initialise an empty database and apply recorded data migrations. Mount persistent storage at `/var/www/html/uploads` so admin uploads survive container replacements.
 
 ## Payments
 
