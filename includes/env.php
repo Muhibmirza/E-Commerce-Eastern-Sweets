@@ -35,5 +35,5 @@ function load_local_env(string $path): void
     }
 }
 
-load_local_env(__DIR__ . '/../.env');
-
+$privateProductionEnv = dirname(__DIR__, 2) . '/.eastern-sweets.env';
+load_local_env(is_file($privateProductionEnv) ? $privateProductionEnv : (__DIR__ . '/../.env'));
