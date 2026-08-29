@@ -29,6 +29,31 @@
     </section>
 
     <section class="form-card">
+        <h2>About Page Details</h2>
+        <p class="muted">The main About paragraph is editable from Website Pages below. These fields control its supporting design and details.</p>
+        <div class="form-grid">
+            <label>Eyebrow<input name="settings[about_eyebrow]" value="<?= h($settings['about_eyebrow'] ?? 'Our sweet story') ?>"></label>
+            <label>Button Text<input name="settings[about_button_text]" value="<?= h($settings['about_button_text'] ?? 'Taste the collection') ?>"></label>
+            <label class="full">Main Heading<input name="settings[about_heading]" value="<?= h($settings['about_heading'] ?? 'Made with tradition. Shared with joy.') ?>"></label>
+            <label>Seal Text<input name="settings[about_seal]" value="<?= h($settings['about_seal'] ?? 'Freshly made every day') ?>"></label>
+            <label>Values Eyebrow<input name="settings[about_values_eyebrow]" value="<?= h($settings['about_values_eyebrow'] ?? 'The Eastern promise') ?>"></label>
+            <label class="full">Values Heading<input name="settings[about_values_heading]" value="<?= h($settings['about_values_heading'] ?? 'The details that make every bite memorable') ?>"></label>
+            <?php
+            $aboutDefaults = [
+                1 => ['25+', 'Years of sweetness', 'Freshness first', 'Small batches prepared with carefully selected ingredients.'],
+                2 => ['50+', 'Fresh favourites', 'Rooted in craft', 'Time-honoured recipes finished with modern consistency.'],
+                3 => ['100%', 'Made with care', 'Made to celebrate', 'Beautiful sweets and boxes for everyday joy and big occasions.'],
+            ];
+            for ($i = 1; $i <= 3; $i++): ?>
+                <label>Stat <?= $i ?> Value<input name="settings[about_stat_<?= $i ?>_value]" value="<?= h($settings['about_stat_' . $i . '_value'] ?? $aboutDefaults[$i][0]) ?>"></label>
+                <label>Stat <?= $i ?> Label<input name="settings[about_stat_<?= $i ?>_label]" value="<?= h($settings['about_stat_' . $i . '_label'] ?? $aboutDefaults[$i][1]) ?>"></label>
+                <label>Value <?= $i ?> Title<input name="settings[about_value_<?= $i ?>_title]" value="<?= h($settings['about_value_' . $i . '_title'] ?? $aboutDefaults[$i][2]) ?>"></label>
+                <label>Value <?= $i ?> Description<input name="settings[about_value_<?= $i ?>_text]" value="<?= h($settings['about_value_' . $i . '_text'] ?? $aboutDefaults[$i][3]) ?>"></label>
+            <?php endfor; ?>
+        </div>
+    </section>
+
+    <section class="form-card">
         <h2>Promotion Band</h2>
         <div class="form-grid">
             <label>Eyebrow<input name="settings[promo_eyebrow]" value="<?= h($settings['promo_eyebrow'] ?? 'Celebration Boxes') ?>"></label>
