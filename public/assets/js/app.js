@@ -210,16 +210,9 @@
     const isMithaiSpin = banner.classList.contains('is-mithai-spin');
     const isSlide3d = banner.classList.contains('is-slide-3d') || banner.classList.contains('is-basic-banner');
     if (isMithaiSpin) {
-      const plate = banner.querySelector('.category-plate-wrap');
       if (reducedMotion) {
         banner.classList.add('is-visible');
-        return;
       }
-      plate?.addEventListener('animationend', event => {
-        if (event.animationName === 'mithaiPlateEntry') {
-          banner.classList.add('is-idle');
-        }
-      }, { once: true });
       return;
     }
     if (isSlide3d) {

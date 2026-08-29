@@ -316,26 +316,20 @@ blockquote cite { color: var(--color-primary); font-weight: 800; font-style: nor
 .category-hero-3d.is-basic-banner .category-plate-float img {
   filter: drop-shadow(0 30px 32px rgba(0,0,0,.24));
 }
-.category-hero-3d.is-mithai-spin .category-plate-stage { perspective: none; overflow: visible; }
+.category-hero-3d.is-mithai-spin .category-plate-stage { perspective: 1200px; overflow: visible; }
 .category-hero-3d.is-mithai-spin .category-plate-wrap {
   width: min(560px, 92vw);
-  transform: translateX(120%) translateY(28px) rotate(0deg) scale(.92);
+  transform: translateX(120%) translateY(28px) rotateX(8deg) rotateY(-22deg) translateZ(-30px) scale(.92);
 }
 .category-hero-3d.is-mithai-spin.is-visible .category-plate-wrap {
   animation: mithaiPlateEntry 1.08s cubic-bezier(.16,.86,.24,1) both;
 }
-.category-hero-3d.is-mithai-spin .category-plate-float {
-  animation: none;
-  transform-style: flat;
-}
+.category-hero-3d.is-mithai-spin .category-plate-float { animation: plateFloat 5.5s ease-in-out infinite; transform-style: preserve-3d; }
 .category-hero-3d.is-mithai-spin .category-plate-float img {
   border-radius: 24px;
   filter: drop-shadow(0 28px 32px rgba(8, 35, 27, .28));
   transform: none;
   will-change: transform;
-}
-.category-hero-3d.is-mithai-spin.is-idle .category-plate-float img {
-  animation: mithaiIdleRotate 24s linear infinite;
 }
 .category-hero-3d.is-mithai-spin .category-plate-shadow {
   width: min(400px, 68%);
@@ -598,14 +592,10 @@ blockquote cite { color: var(--color-primary); font-weight: 800; font-style: nor
   100% { opacity: 1; transform: translateX(0) translateY(0) rotateX(2deg) rotateY(-5deg) translateZ(24px) scale(1); }
 }
 @keyframes mithaiPlateEntry {
-  0% { opacity: 0; transform: translateX(120%) translateY(34px) rotate(0deg) scale(.9); }
-  62% { opacity: 1; transform: translateX(8%) translateY(-8px) rotate(330deg) scale(1.02); }
-  82% { opacity: 1; transform: translateX(-2%) translateY(-14px) rotate(372deg) scale(1.01); }
-  100% { opacity: 1; transform: translateX(0) translateY(0) rotate(360deg) scale(1); }
-}
-@keyframes mithaiIdleRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  0% { opacity: 0; transform: translateX(120%) translateY(34px) rotateX(8deg) rotateY(-24deg) translateZ(-30px) scale(.9); }
+  62% { opacity: 1; transform: translateX(8%) translateY(-8px) rotateX(3deg) rotateY(-9deg) translateZ(18px) scale(1.02); }
+  82% { opacity: 1; transform: translateX(-2%) translateY(-12px) rotateX(2deg) rotateY(-4deg) translateZ(24px) scale(1.01); }
+  100% { opacity: 1; transform: translateX(0) translateY(0) rotateX(2deg) rotateY(-5deg) translateZ(24px) scale(1); }
 }
 @keyframes cartPop { 0%{transform:scale(1)} 50%{transform:scale(1.28)} 100%{transform:scale(1)} }
 @media (prefers-reduced-motion: reduce) {
