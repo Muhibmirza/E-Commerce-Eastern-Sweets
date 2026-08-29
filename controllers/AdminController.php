@@ -152,12 +152,38 @@ final class AdminController
 
     private function dashboard(): void
     {
+        $period = in_array($_GET['period'] ?? '', ['daily', 'weekly', 'monthly'], true) ? (string)$_GET['period'] : 'daily';
+        $days = ['daily' => 7, 'weekly' => 28, 'monthly' => 180][$period];
+        $from = date('Y-m-d', strtotime('-' . ($days - 1) . ' days'));
+        $to = date('Y-m-d');
+        $sales = Order::salesReport($from, $to);
+        $salesByDate = array_column($sales, null, 'sale_date');
+        $dailyChart = [];
+        for ($date = new DateTimeImmutable($from); $date <= new DateTimeImmutable($to); $date = $date->modify('+1 day')) {
+            $key = $date->format('Y-m-d');
+            $row = $salesByDate[$key] ?? ['total' => 0, 'orders' => 0];
+            $dailyChart[] = ['date' => $key, 'label' => $date->format('M j'), 'total' => (float)$row['total'], 'orders' => (int)$row['orders']];
+        }
+        $chart = [];
+        foreach ($dailyChart as $row) {
+            $date = new DateTimeImmutable($row['date']);
+            $groupKey = $period === 'monthly' ? $date->format('Y-m') : ($period === 'weekly' ? $date->format('o-W') : $row['date']);
+            $label = $period === 'monthly' ? $date->format('M Y') : ($period === 'weekly' ? 'W' . $date->format('W') : $row['label']);
+            if (!isset($chart[$groupKey])) {
+                $chart[$groupKey] = ['date' => $row['date'], 'label' => $label, 'total' => 0.0, 'orders' => 0];
+            }
+            $chart[$groupKey]['total'] += $row['total'];
+            $chart[$groupKey]['orders'] += $row['orders'];
+        }
+        $chart = array_values($chart);
+
         render('admin/dashboard', [
             'title' => 'Dashboard',
             'stats' => Order::dashboardStats(),
             'orders' => Order::adminList([], 8),
             'lowStock' => Database::connection()->query('SELECT p.name, p.stock, c.name AS category_name FROM products p JOIN categories c ON c.id = p.category_id WHERE p.stock <= 15 ORDER BY p.stock ASC LIMIT 6')->fetchAll(),
-            'chart' => Order::salesReport(date('Y-m-d', strtotime('-6 days')), date('Y-m-d')),
+            'chart' => $chart,
+            'chartPeriod' => $period,
         ], 'admin');
     }
 

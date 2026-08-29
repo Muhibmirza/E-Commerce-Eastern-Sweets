@@ -6,12 +6,21 @@
 </div>
 <div class="admin-grid">
     <section class="table-card">
-        <div class="card-head"><h2>Sales Overview</h2><div class="segmented"><button>Daily</button><button>Weekly</button><button>Monthly</button></div></div>
-        <div class="chart-bars"><?php foreach ($chart as $row): $height=min(100,max(8,(float)$row['total']/100)); ?><div style="height:<?= h($height) ?>%"><span><?= money($row['total']) ?></span></div><?php endforeach; ?></div>
+        <div class="card-head"><div><h2>Sales Overview</h2><p class="muted">Revenue from non-cancelled orders</p></div><div class="segmented"><?php foreach (['daily'=>'7 Days','weekly'=>'4 Weeks','monthly'=>'6 Months'] as $key=>$label): ?><a class="<?= $chartPeriod === $key ? 'is-active' : '' ?>" href="<?= url('admin/dashboard', ['period'=>$key]) ?>"><?= h($label) ?></a><?php endforeach; ?></div></div>
+        <?php $maxSale = max(array_map(static fn($row) => (float)$row['total'], $chart) ?: [0]); ?>
+        <div class="chart-bars" style="--chart-columns:<?= count($chart) ?>" role="img" aria-label="Sales revenue chart">
+            <?php foreach ($chart as $row): $height = $maxSale > 0 ? max(3, ((float)$row['total'] / $maxSale) * 100) : 3; ?>
+                <div class="chart-column" title="<?= h($row['label']) ?>: <?= money($row['total']) ?> from <?= h($row['orders']) ?> order(s)">
+                    <span class="chart-value"><?= money($row['total']) ?></span>
+                    <i style="height:<?= h(round($height, 2)) ?>%"></i>
+                    <small><?= h($row['label']) ?></small>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </section>
     <section class="table-card">
-        <div class="card-head"><h2>Low Stock</h2></div>
-        <table class="data-table"><thead><tr><th>Product</th><th>Category</th><th>Stock</th></tr></thead><tbody><?php foreach ($lowStock as $row): ?><tr><td><?= h($row['name']) ?></td><td><?= h($row['category_name']) ?></td><td class="num"><?= h($row['stock']) ?></td></tr><?php endforeach; ?></tbody></table>
+        <div class="card-head"><div><h2>Low Stock</h2><p class="muted">Products with 15 or fewer units</p></div><a class="btn btn-outline btn-sm" href="<?= url('admin/products') ?>">Manage</a></div>
+        <div class="responsive-table"><table class="data-table"><thead><tr><th>Product</th><th>Category</th><th>Stock</th><th>Status</th></tr></thead><tbody><?php if (!$lowStock): ?><tr><td colspan="4" class="empty-cell">All products are sufficiently stocked.</td></tr><?php else: foreach ($lowStock as $row): ?><tr><td><?= h($row['name']) ?></td><td><?= h($row['category_name']) ?></td><td class="num"><?= h($row['stock']) ?></td><td><span class="stock-pill <?= (int)$row['stock'] === 0 ? 'is-out' : '' ?>"><?= (int)$row['stock'] === 0 ? 'Out of stock' : 'Low' ?></span></td></tr><?php endforeach; endif; ?></tbody></table></div>
     </section>
 </div>
 <section class="table-card">
