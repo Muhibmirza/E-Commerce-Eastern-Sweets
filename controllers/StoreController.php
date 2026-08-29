@@ -481,10 +481,14 @@ final class StoreController
         if (!preg_match('#^(https?://|/)#', $cta)) {
             $cta = url($cta);
         }
+        $generatedCutout = 'uploads/categories/banner-cutouts/' . $slug . '.png';
+        $bannerImage = is_file(dirname(__DIR__) . '/' . $generatedCutout)
+            ? $generatedCutout
+            : ($category['banner_image_path'] ?: ($category['image_path'] ?? 'public/assets/images/products/product-33.png'));
         return [
             'name' => (string)$category['name'],
             'tagline' => $category['banner_tagline'] ?: 'Freshly prepared Eastern Sweets favourites',
-            'image' => $category['banner_image_path'] ?: ($category['image_path'] ?? 'public/assets/images/products/product-33.png'),
+            'image' => $bannerImage,
             'accent' => $category['banner_accent'] ?: '#d1ad57',
             'cta_text' => $category['banner_cta_text'] ?: 'Shop ' . $category['name'],
             'cta' => $cta,
